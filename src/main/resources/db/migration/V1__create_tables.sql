@@ -18,3 +18,11 @@ CREATE TABLE purchase (
     quantity INT DEFAULT 1,
     purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE authorities (
+    username VARCHAR(255) NOT NULL,
+    authority VARCHAR(255) NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE INDEX idx_authorities_username ON authorities(username);
