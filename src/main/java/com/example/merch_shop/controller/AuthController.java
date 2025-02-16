@@ -60,7 +60,8 @@ public class AuthController {
         if (userRepo.existsByUsername(request.username())) {
             log.error("Username conflict: {}", request.username());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse("Username already exists"));
+                    .body(ErrorResponse.builder().errors("Username already exists")
+                            .build());
         }
 
         try {
@@ -79,11 +80,11 @@ public class AuthController {
         } catch (DataIntegrityViolationException e) {
             log.error("Data integrity violation: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse("Username already exists"));
+                    .body(ErrorResponse.builder().errors("Username already exists").build());
         } catch (Exception e) {
             log.error("Registration failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Registration failed"));
+                    .body(ErrorResponse.builder().errors("Registration failed").build());
         }
     }
 }
