@@ -78,8 +78,7 @@ openssl rsa -pubout -in private.pem -out public.pem
 Пример ответа:
 ```JSON
 {
-  "status": "success",
-  "message": "Coins sent successfully"
+  "message": "Coins transferred successfully"
 }
 ```
 
@@ -92,8 +91,10 @@ openssl rsa -pubout -in private.pem -out public.pem
 
 ```JSON
 {
-  "status": "success",
-  "message": "Purchase successful"
+
+  "message": "Purchase successful",
+  "remainingCoins": 900
+
 }
 ```
 
@@ -103,30 +104,33 @@ openssl rsa -pubout -in private.pem -out public.pem
 Получение информации о пользователе, включая баланс монет и историю транзакций.
 ```JSON
 {
-  "coins": 500,
+  "coins": 1250,
   "inventory": [
     {
-      "type": "t-shirt",
+      "type": "pink-hoody",
       "quantity": 1
     },
     {
-      "type": "cup",
-      "quantity": 3
+      "type": "wallet",
+      "quantity": 2
     }
   ],
   "coinHistory": {
     "received": [
       {
-        "fromUser": "otherUser",
+        "fromUser": "vlad1",
         "amount": 100
+      },
+      {
+        "fromUser": "vlad1",
+        "amount": 150
+      },
+      {
+        "fromUser": "vlad1",
+        "amount": 600
       }
     ],
-    "sent": [
-      {
-        "toUser": "targetUser",
-        "amount": 50
-      }
-    ]
+    "sent": []
   }
 }
 ```
