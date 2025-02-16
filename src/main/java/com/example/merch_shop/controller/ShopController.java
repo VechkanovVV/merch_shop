@@ -1,14 +1,18 @@
 package com.example.merch_shop.controller;
 
+import com.example.merch_shop.exception.InsufficientCoinsException;
+import com.example.merch_shop.exception.ProductNotFoundException;
 import com.example.merch_shop.model.User;
 import com.example.merch_shop.repository.UserRepository;
 import com.example.merch_shop.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -29,10 +33,30 @@ public class ShopController {
 
         String username = principal.getName();
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        try {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        shopService.purchaseItem(user, item);
-        return ResponseEntity.ok().build();
+            shopService.purchaseItem(user, item);
+            return ResponseEntity.ok().body(
+                    Map.of("message", "Purchase successful",
+                            "remainingCoins", user.getCoins())
+            );
+
+        } catch (ProductNotFoundException ex) {
+            log.error("Product not found: {}", item);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", ex.getMessage()));
+
+        } catch (InsufficientCoinsException ex) {
+            log.error("Insufficient coins for user: {}", username);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", ex.getMessage()));
+
+        } catch (UsernameNotFoundException ex) {
+            log.error("User not found: {}", username);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 }
